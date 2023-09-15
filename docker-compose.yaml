@@ -1,0 +1,54 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    working_dir: /app
+    # Bind all important files over
+    # Notably, node_modules and .svelte-kit are not bound
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/static:/app/static
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/svelte.config.js:/app/svelte.config.js
+    depends_on:
+      - backend
+    ports:
+      - 5173:5173
+    # Run command
+    command: [ "bun", "--bun", "run", "dev", "--", "--host" ]
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    networks:
+      - back-db
+    env_file:
+      - .env.dev
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - back-db
+    env_file:
+      - .env.dev
+  adminer:
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - back-db
+    ports:
+      - 8080:8080
+
+networks:
+  back-db: {}
