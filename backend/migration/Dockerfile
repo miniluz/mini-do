@@ -1,14 +1,14 @@
-FROM rust:1.72 AS setup
+FROM rust:1.72 AS chef
 # Install cargo-chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
-FROM setup AS planner
+FROM chef AS planner
 COPY . .
 # Prepare needed libraries and save to recipe.json
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM setup as builder
+FROM chef as builder
 # Build libraries
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
@@ -17,7 +17,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release
 
-FROM setup as runtime
+FROM chef as runtime
 # Copy only compiled app
 COPY --from=builder /app/target/release/migration /
 ENTRYPOINT [ "/migration" ]
