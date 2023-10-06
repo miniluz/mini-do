@@ -4,8 +4,8 @@ RUN cargo install cargo-chef
 WORKDIR /app
 
 FROM setup AS planner
-# Prepare needed libraries and save to recipe.json
 COPY . .
+# Prepare needed libraries and save to recipe.json
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM setup as builder
@@ -15,9 +15,9 @@ RUN cargo chef cook --release --recipe-path recipe.json
 
 # Build code
 COPY . .
-RUN cargo build --release --bin backend
+RUN cargo build --release
 
 FROM setup as runtime
 # Copy only compiled app
-COPY --from=builder /app/target/release/backend /
-ENTRYPOINT [ "/backend" ]
+COPY --from=builder /app/target/release/migration /
+ENTRYPOINT [ "/migration" ]

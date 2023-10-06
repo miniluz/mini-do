@@ -30,7 +30,16 @@ services:
       - back-db
     env_file:
       - .env.dev
-
+  migrator:
+    build:
+      context: backend/migration
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    networks:
+      - back-db
+    env_file:
+      - .env.dev
   db:
     image: postgres:latest
     volumes:

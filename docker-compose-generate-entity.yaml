@@ -1,0 +1,26 @@
+version: "3"
+services:
+  entity-generator:
+    build:
+      context: backend/
+      dockerfile: Dockerfile.generate_entity
+    volumes:
+      - ./backend/entity:/app/entity
+    depends_on:
+      - db
+    networks:
+      - back-db
+    env_file:
+      - .env.dev
+  db:
+    image: postgres:latest
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data
+      - ./postgres.conf:/etc/postgresql/postgresql.conf
+    networks:
+      - back-db
+    env_file:
+      - .env.dev
+
+networks:
+  back-db: {}
