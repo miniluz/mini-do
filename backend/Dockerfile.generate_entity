@@ -1,6 +1,5 @@
 FROM rust:1.72 AS entity-generator
-# Install cargo-chef
 RUN cargo install sea-orm-cli
 RUN rustup component add rustfmt
 WORKDIR /app
-ENTRYPOINT "/usr/local/cargo/bin/sea-orm-cli" "generate" "entity" "-o" "entity/src"
+ENTRYPOINT "/usr/local/cargo/bin/sea-orm-cli" "generate" "entity" "-o" "entity/src/entities"

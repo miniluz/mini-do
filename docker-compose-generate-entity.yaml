@@ -5,7 +5,7 @@ services:
       context: backend/
       dockerfile: Dockerfile.generate_entity
     volumes:
-      - ./backend/entity:/app/entity
+      - ./backend/entity/src/entities/:/app/entity/src/entities
     depends_on:
       - db
     networks:
