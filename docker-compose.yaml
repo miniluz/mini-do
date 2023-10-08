@@ -28,18 +28,24 @@ services:
       - db
     networks:
       - back-db
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - RUST_LOG=info
     env_file:
       - .env.dev
-  migrator:
-    build:
-      context: backend/migration
-      dockerfile: Dockerfile
-    depends_on:
-      - db
-    networks:
-      - back-db
-    env_file:
-      - .env.dev
+    ports:
+      - 3000:3000
+  # migrator:
+  #   build:
+  #     context: backend/migration
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - back-db
+  #   env_file:
+  #     - .env.dev
   db:
     image: postgres:latest
     volumes:

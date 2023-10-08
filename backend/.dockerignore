@@ -3,4 +3,9 @@
 !/src
 !Cargo.lock
 !Cargo.toml
-!/migration
+!/migration/src
+!/migration/Cargo.toml
+!/migration/Cargo.lock
+!/entity/src
+!/entity/Cargo.toml
+!/entity/Cargo.lock
