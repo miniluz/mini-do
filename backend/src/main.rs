@@ -1,24 +1,16 @@
 use std::{env, net::SocketAddr, str::FromStr};
 
+mod entities;
+
 use migration::{Migrator, MigratorTrait};
-use poem::{listener::TcpListener, web::Data, EndpointExt, Route, Server};
-use poem_openapi::{payload::Json, Object, OpenApi, OpenApiService};
-use sea_orm::{Database, DatabaseConnection};
+use poem::{listener::TcpListener, EndpointExt, Route, Server};
+use poem_openapi::OpenApiService;
+use sea_orm::Database;
 use tracing::{event, span, Level};
 
-struct Api;
+mod task;
 
-#[derive(Object)]
-struct Test;
-
-#[OpenApi]
-impl Api {
-    /// List tasks
-    #[oai(path = "/", method = "get")]
-    async fn index(&self, conn: Data<&DatabaseConnection>) -> Json<Test> {
-        Json(Test {})
-    }
-}
+use task::TaskApi;
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {
@@ -44,12 +36,13 @@ async fn main() -> color_eyre::Result<()> {
     let port = env::var("PORT").expect("PORT is not set in env.");
     let addr = SocketAddr::from_str(&format!("{host}:{port}")).unwrap();
 
-    let api_serive = OpenApiService::new(Api, "mini-do backend", "1.0").server(addr.to_string());
-    let app = Route::new().nest("/", api_serive).data(conn);
-
-    Server::new(TcpListener::bind(addr)).run(app).await.unwrap();
+    let task_service =
+        OpenApiService::new(TaskApi, "Task endpoint", "1.0").server(addr.to_string());
+    let app = Route::new().nest("/backend/task", task_service).data(conn);
 
     drop(start_up_guard);
+
+    Server::new(TcpListener::bind(addr)).run(app).await.unwrap();
 
     Ok(())
 }

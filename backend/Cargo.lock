@@ -336,12 +336,13 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 name = "backend"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "color-eyre",
- "entity",
  "migration",
  "poem",
  "poem-openapi",
  "sea-orm",
+ "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -539,14 +540,16 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.30"
+version = "0.4.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "defd4e7873dbddba6c7c91e199c7fcb946abc4a6a4ac3195400bcfb01b5de877"
+checksum = "7f2c685bad3eb3d45a01354cedb7d5faa66194d1d58ba6e267a8de788f79db38"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
  "serde",
+ "wasm-bindgen",
  "windows-targets",
 ]
 
@@ -854,13 +857,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7268b386296a025e474d5140678f75d6de9493ae55a5d709eeb9dd08149945e1"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "entity"
-version = "0.1.0"
-dependencies = [
- "sea-orm",
 ]
 
 [[package]]
@@ -1942,6 +1938,7 @@ checksum = "c62659dcc7ca09a525881300646f3b28e319889072e83cd16a2865ba024a185e"
 dependencies = [
  "base64",
  "bytes",
+ "chrono",
  "derive_more",
  "futures-util",
  "indexmap 2.0.0",

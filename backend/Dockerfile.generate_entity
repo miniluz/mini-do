@@ -2,4 +2,4 @@ FROM rust:1.72 AS entity-generator
 RUN cargo install sea-orm-cli
 RUN rustup component add rustfmt
 WORKDIR /app
-ENTRYPOINT "/usr/local/cargo/bin/sea-orm-cli" "generate" "entity" "-o" "entity/src/entities"
+ENTRYPOINT "/usr/local/cargo/bin/sea-orm-cli" "generate" "entity" "-o" "src/entities" "--model-extra-derives" "poem_openapi::Object"
