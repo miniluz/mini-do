@@ -1,4 +1,4 @@
-FROM rust:1.72 AS chef
+FROM docker.io/rust:1.72 AS chef
 # Install cargo-chef
 RUN cargo install cargo-chef
 WORKDIR /app

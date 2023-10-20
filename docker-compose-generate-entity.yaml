@@ -13,7 +13,7 @@ services:
     env_file:
       - .env.dev
   db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     volumes:
       - ./db-data/:/var/lib/postgresql/data
       - ./postgres.conf:/etc/postgresql/postgresql.conf

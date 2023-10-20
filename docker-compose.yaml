@@ -13,8 +13,10 @@ services:
       - ./frontend/vite.config.ts:/app/vite.config.ts
       - ./frontend/tsconfig.json:/app/tsconfig.json
       - ./frontend/svelte.config.js:/app/svelte.config.js
-    depends_on:
-      - backend
+      - ./frontend/postcss.config.js:/app/postcss.config.js
+      - ./frontend/tailwind.config.js:/app/tailwind.config.js
+    # depends_on:
+    #   - backend
     ports:
       - 5173:5173
     # Run command
@@ -47,7 +49,7 @@ services:
   #   env_file:
   #     - .env.dev
   db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     volumes:
       - ./db-data/:/var/lib/postgresql/data
       - ./postgres.conf:/etc/postgresql/postgresql.conf
@@ -56,7 +58,7 @@ services:
     env_file:
       - .env.dev
   adminer:
-    image: adminer:latest
+    image: docker.io/adminer:latest
     restart: always
     depends_on:
       - db

@@ -1,4 +1,4 @@
-FROM oven/bun:1.0 as bun
+FROM docker.io/oven/bun:1.0 as bun
 
 # When building the image the docker-compose volumes aren't set up
 # So we'll set up an app folder
