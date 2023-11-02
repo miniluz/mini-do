@@ -38,7 +38,7 @@ async fn main() -> color_eyre::Result<()> {
 
     let task_service =
         OpenApiService::new(TaskApi, "Task endpoint", "1.0").server(addr.to_string());
-    let app = Route::new().nest("/backend/task", task_service).data(conn);
+    let app = Route::new().nest("/backend", task_service).data(conn);
 
     drop(start_up_guard);
 
