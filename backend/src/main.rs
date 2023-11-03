@@ -3,7 +3,7 @@ use std::{env, net::SocketAddr, str::FromStr};
 mod entities;
 
 use migration::{Migrator, MigratorTrait};
-use poem::{listener::TcpListener, EndpointExt, Route, Server};
+use poem::{listener::TcpListener, middleware::Cors, EndpointExt, Route, Server};
 use poem_openapi::OpenApiService;
 use sea_orm::Database;
 use tracing::{event, span, Level};
@@ -38,7 +38,10 @@ async fn main() -> color_eyre::Result<()> {
 
     let task_service =
         OpenApiService::new(TaskApi, "Task endpoint", "1.0").server(addr.to_string());
-    let app = Route::new().nest("/backend", task_service).data(conn);
+    let app = Route::new()
+        .nest("/backend", task_service)
+        .with(Cors::new())
+        .data(conn);
 
     drop(start_up_guard);
 

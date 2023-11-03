@@ -1,19 +1,40 @@
+use chrono::{DateTime, Utc};
 use poem::web::Data;
 use poem_openapi::{
     param::Query,
     payload::{Json, PlainText},
-    ApiResponse, OpenApi,
+    ApiResponse, Object, OpenApi,
 };
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, EntityTrait, IntoActiveModel,
-    IntoActiveValue,
+    ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, EntityTrait, IntoActiveValue,
 };
-use serde_json::de;
-use tracing::info;
 
 use crate::entities::task;
 
 pub struct TaskApi;
+
+#[derive(Debug, Object)]
+pub struct TaskBody {
+    pub id: i32,
+    pub title: String,
+    pub text: String,
+    pub creation_time: DateTime<Utc>,
+    pub due_time: DateTime<Utc>,
+    pub done: bool,
+}
+
+impl From<TaskBody> for task::Model {
+    fn from(value: TaskBody) -> Self {
+        Self {
+            id: value.id,
+            title: value.title,
+            text: value.text,
+            creation_time: value.creation_time.naive_utc(),
+            due_time: value.due_time.naive_utc(),
+            done: value.done,
+        }
+    }
+}
 
 #[derive(Debug, ApiResponse)]
 pub enum GetTaskResponse {
@@ -83,6 +104,7 @@ impl TaskApi {
             Err(_) => GetTaskResponse::DbErr,
         }
     }
+
     #[oai(path = "/tasks", method = "get")]
     pub async fn get_tasks(&self, conn: Data<&DatabaseConnection>) -> GetTasksResponse {
         let tasks_result = task::Entity::find().all(conn.0).await;
@@ -97,15 +119,16 @@ impl TaskApi {
     pub async fn update_task(
         &self,
         conn: Data<&DatabaseConnection>,
-        task: Json<task::Model>,
+        task: Json<TaskBody>,
     ) -> PatchTaskResponse {
+        let task: task::Model = task.0.into();
         let user_task = task::ActiveModel {
-            id: task.0.id.into_active_value(),
-            title: task.0.title.into_active_value(),
-            text: task.0.text.into_active_value(),
-            creation_time: task.0.creation_time.into_active_value(),
-            due_time: task.0.due_time.into_active_value(),
-            done: task.0.done.into_active_value(),
+            id: task.id.into_active_value(),
+            title: task.title.into_active_value(),
+            text: task.text.into_active_value(),
+            creation_time: task.creation_time.into_active_value(),
+            due_time: task.due_time.into_active_value(),
+            done: task.done.into_active_value(),
         };
         let update_result = user_task.update(conn.0).await;
         match update_result {
@@ -121,15 +144,16 @@ impl TaskApi {
     pub async fn create_task(
         &self,
         conn: Data<&DatabaseConnection>,
-        task: Json<task::Model>,
+        task: Json<TaskBody>,
     ) -> PostTaskResponse {
+        let task: task::Model = task.0.into();
         let user_task = task::ActiveModel {
             id: ActiveValue::NotSet,
-            title: task.0.title.into_active_value(),
-            text: task.0.text.into_active_value(),
-            creation_time: task.0.creation_time.into_active_value(),
-            due_time: task.0.due_time.into_active_value(),
-            done: task.0.done.into_active_value(),
+            title: task.title.into_active_value(),
+            text: task.text.into_active_value(),
+            creation_time: task.creation_time.into_active_value(),
+            due_time: task.due_time.into_active_value(),
+            done: task.done.into_active_value(),
         };
         let db_result = task::Entity::insert(user_task).exec(conn.0).await;
         match db_result {
