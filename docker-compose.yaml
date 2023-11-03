@@ -15,8 +15,9 @@ services:
       - ./frontend/tailwind.config.js:/app/tailwind.config.js
       - ./frontend/tsconfig.json:/app/tsconfig.json
       - ./frontend/vite.config.ts:/app/vite.config.ts
-    # depends_on:
-    #   - backend
+      - ./frontend/.env.development:/app/.env.development
+    depends_on:
+      - backend
     ports:
       - 5173:5173
     # Run command
