@@ -2,12 +2,22 @@
 	import type { Task } from "./task";
 
 	export let task: Task;
-	let task_copy = structuredClone(task);
-	let date_string = new Date(
-		task.due_time.getTime() - task.due_time.getTimezoneOffset() * 60000
-	)
-		.toISOString()
-		.slice(0, -8);
+
+	let task_copy: Task = structuredClone(task);
+	let date_string: string = task_copy.due_time.toLocaleString();
+	$: timestamp = Date.parse(date_string);
+
+	export function change(task: Task): Task | void {
+		if (isNaN(timestamp)) return;
+
+		var return_task = structuredClone(task_copy);
+		return_task.due_time = new Date(timestamp);
+
+		task_copy = structuredClone(task);
+		date_string = task_copy.due_time.toLocaleString();
+
+		return return_task;
+	}
 </script>
 
 <div class="flex justify-center w-full h-full xl:fixed xl:top-0 xl:left-0">
@@ -26,7 +36,11 @@
 					Due in
 					<input
 						type="datetime-local"
-						class="input input-sm xl:input-md input-bordered ml-4"
+						class="input input-sm xl:input-md input-bordered ml-4 {isNaN(
+							timestamp
+						)
+							? 'input-error'
+							: ''}"
 						bind:value={date_string}
 						required
 					/>
@@ -47,8 +61,7 @@
 				aria-label="Task description"
 				class="textarea textarea-bordered w-full overflow-auto empty:before:content-[attr(data-placeholder)]"
 				bind:innerHTML={task_copy.text}
-			>
-			</div>
+			/>
 		</div>
 	</div>
 </div>
